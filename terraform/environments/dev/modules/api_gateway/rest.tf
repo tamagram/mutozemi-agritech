@@ -1,4 +1,8 @@
 resource "aws_api_gateway_rest_api" "raspberry" {
+  binary_media_types = [
+    "image/png",
+    "image/jpeg",
+  ]
   body = jsonencode({
     openapi = "3.0.1"
     info = {

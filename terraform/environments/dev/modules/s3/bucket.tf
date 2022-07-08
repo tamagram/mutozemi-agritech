@@ -1,4 +1,5 @@
 resource "aws_s3_bucket" "grow_bucket" {
+  tags = {}
 }
 
 resource "aws_s3_bucket_acl" "bucket_acl" {
