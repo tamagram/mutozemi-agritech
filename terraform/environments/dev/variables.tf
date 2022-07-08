@@ -1,7 +1,8 @@
 # Input variable definitions\
 
+
 variable "aws_region" {
-  description = "AWS region for all resources."
+  description = "AWS project region."
 
   type    = string
   default = "ap-northeast-1"

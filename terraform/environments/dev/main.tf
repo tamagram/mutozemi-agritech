@@ -1,22 +1,29 @@
 terraform {
-  cloud {
+  backend "remote" {
     organization = "tamadev"
-    hostname     = "app.terraform.io" # Optional; defaults to app.terraform.io
-
     workspaces {
-      tags = ["agritech", "development"]
+      name = "agritech"
     }
   }
+
 
   required_providers {
     aws = {
       source = "hashicorp/aws"
     }
+    archive = {
+      source = "hashicorp/archive"
+    }
+    null = {
+      source = "hashicorp/null"
+    }
   }
 }
 
 provider "aws" {
-  region = var.aws_region
+  shared_credentials_files = ["./credentials"]
+  profile                  = "tamadevelopment"
+  region                   = var.aws_region
   default_tags {
     tags = {
       Environment = var.environment
@@ -24,5 +31,12 @@ provider "aws" {
       Owner       = var.owner
     }
   }
-  profile = "tamadevelopment"
+}
+
+module "rest_api" {
+  source = "./modules/api_gateway"
+}
+
+module "grow_s3" {
+  source = "./modules/s3"
 }
