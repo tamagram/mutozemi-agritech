@@ -1,27 +1,35 @@
 resource "aws_api_gateway_rest_api" "raspberry" {
-  binary_media_types = [
-    "image/png",
-    "image/jpeg",
-  ]
-  body = jsonencode({
-    openapi = "3.0.1"
-    info = {
-      title   = "raspberry"
-      version = "1.0"
-    }
-    paths = {
-      "/path1" = {
-        get = {
-          x-amazon-apigateway-integration = {
-            httpMethod           = "GET"
-            payloadFormatVersion = "1.0"
-            type                 = "HTTP_PROXY"
-            uri                  = "https://ip-ranges.amazonaws.com/ip-ranges.json"
+  body = jsonencode(
+    {
+      "openapi" : "3.0.1",
+      "info" : {
+        "title" : "raspberry",
+        "version" : "1.0"
+      },
+      "servers" : [ {
+        "url" : "https://3ftss2zfz4.execute-api.ap-northeast-1.amazonaws.com/{basePath}",
+        "variables" : {
+          "basePath" : {
+            "default" : "/raspberry_stage"
           }
         }
-      }
+      } ],
+      "paths" : {
+        "/path1" : {
+          "get" : {
+            "x-amazon-apigateway-integration" : {
+              "httpMethod" : "GET",
+              "uri" : "https://ip-ranges.amazonaws.com/ip-ranges.json",
+              "passthroughBehavior" : "when_no_match",
+              "type" : "http_proxy"
+            }
+          }
+        }
+      },
+      "components" : { },
+      "x-amazon-apigateway-binary-media-types" : [ "*/*" ]
     }
-  })
+  )
 
   name = "raspberry"
 

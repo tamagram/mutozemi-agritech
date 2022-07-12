@@ -34,7 +34,8 @@ provider "aws" {
 }
 
 module "rest_api" {
-  source = "./modules/api_gateway"
+  source        = "./modules/api_gateway"
+  s3_bucket_arn = module.grow_s3.bucket_arn
 }
 
 module "grow_s3" {
