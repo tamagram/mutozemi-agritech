@@ -1,22 +1,35 @@
-resource "aws_iam_policy" "policy" {
-  name        = "test_policy"
+resource "aws_iam_policy" "s3_access" {
+  name        = "s3_access_policy"
   path        = "/"
-  description = "My test policy"
+  description = ""
 
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "s3:PutObject",
-          "s3:GetObject",
-        ]
-        Effect   = "Allow"
-        Resource = "${var.s3_bucket_arn}/*"
-Sid      = "VisualEditor0"
-      },
-    ]
-  })
+  policy = jsonencode(
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "VisualEditor0",
+          "Effect": "Allow",
+          "Action": "s3:PutObject",
+          "Resource": "${var.s3_bucket_arn}/*"
+         }
+       ]
+     }
+    )
+  }
+
+resource "aws_iam_policy_attachment" "s3_access_attach" {
+  name = "s3_access_attach"
+  roles = [
+    aws_iam_role.api.name
+  ]
+  policy_arn = aws_iam_policy.s3_access.arn
+}
+
+resource "aws_iam_policy_attachment" "log_attach" {
+  name = "log_attach"
+  roles = [
+    aws_iam_role.api.name
+  ]
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }

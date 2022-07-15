@@ -3,30 +3,74 @@ resource "aws_api_gateway_rest_api" "raspberry" {
     {
       "openapi" : "3.0.1",
       "info" : {
-        "title" : "raspberry",
-        "version" : "1.0"
+        "title" : "test",
+        "version" : "2022-07-13T22:27:01Z"
       },
       "servers" : [ {
-        "url" : "https://3ftss2zfz4.execute-api.ap-northeast-1.amazonaws.com/{basePath}",
+        "url" : "https://qm64459gac.execute-api.ap-northeast-1.amazonaws.com/{basePath}",
         "variables" : {
           "basePath" : {
-            "default" : "/raspberry_stage"
+            "default" : "/v1"
           }
         }
       } ],
       "paths" : {
-        "/path1" : {
-          "get" : {
+        "/{folder}/{object}" : {
+          "put" : {
+            "parameters" : [ {
+              "name" : "object",
+              "in" : "path",
+              "required" : true,
+              "schema" : {
+                "type" : "string"
+              }
+            }, {
+              "name" : "folder",
+              "in" : "path",
+              "required" : true,
+              "schema" : {
+                "type" : "string"
+              }
+            } ],
+            "responses" : {
+              "200" : {
+                "description" : "200 response",
+                "content" : {
+                  "application/json" : {
+                    "schema" : {
+                      "$ref" : "#/components/schemas/Empty"
+                    }
+                  }
+                }
+              }
+            },
             "x-amazon-apigateway-integration" : {
-              "httpMethod" : "GET",
-              "uri" : "https://ip-ranges.amazonaws.com/ip-ranges.json",
+              "credentials" : "${aws_iam_role.api.arn}",
+              "httpMethod" : "PUT",
+              "uri" : "arn:aws:apigateway:ap-northeast-1:s3:path/{bucket}/{key}",
+              "responses" : {
+                "default" : {
+                  "statusCode" : "200"
+                }
+              },
+              "requestParameters" : {
+                "integration.request.path.key" : "method.request.path.object",
+                "integration.request.path.bucket" : "method.request.path.folder"
+              },
               "passthroughBehavior" : "when_no_match",
-              "type" : "http_proxy"
+              "type" : "aws"
             }
           }
         }
       },
-      "components" : { },
+      "components" : {
+        "schemas" : {
+          "Empty" : {
+            "title" : "Empty Schema",
+            "type" : "object"
+          }
+        }
+      },
       "x-amazon-apigateway-binary-media-types" : [ "*/*" ]
     }
   )
